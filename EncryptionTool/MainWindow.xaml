@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Label Content="Naam van de sleutel" HorizontalAlignment="Left" Margin="170,81,0,0" VerticalAlignment="Top"/>
+        <Button Content="Genereer AES Sleutel" HorizontalAlignment="Left" Margin="207,298,0,0" VerticalAlignment="Top"/>
+        <Button Content="Genereer RSA Sleutel" HorizontalAlignment="Left" Margin="510,298,0,0" VerticalAlignment="Top"/>
+
     </Grid>
 </Window>

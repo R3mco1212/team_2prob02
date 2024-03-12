@@ -25,4 +25,6 @@ namespace EncryptionTool
             InitializeComponent();
         }
     }
+
+    //Kanje dit zien
 }

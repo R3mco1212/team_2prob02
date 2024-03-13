@@ -13,5 +13,6 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Button Name="BtnTest" Content="Test" Click="BtnTest_Click"/>
+        <Image Name="imgDecrypted" Grid.Column="1"/>
     </Grid>
 </Window>

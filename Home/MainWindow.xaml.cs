@@ -77,7 +77,8 @@ namespace Home
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                Filter = "Selecteer een Aes Key (*.txt)|*.txt"
+                Filter = "Selecteer een Aes Key (*.txt)|*.txt",
+                InitialDirectory = Properties.Settings.Default.DefaultFolder,
             };
             if(ofd.ShowDialog() == true)
             {
@@ -93,7 +94,8 @@ namespace Home
         {
             OpenFileDialog ofd = new OpenFileDialog()
             {
-                Filter = "Selecteer een Aes Iv (*.txt)|*.txt"
+                Filter = "Selecteer een Aes Iv (*.txt)|*.txt",
+                InitialDirectory = Properties.Settings.Default.DefaultFolder,
             };
             if (ofd.ShowDialog() == true)
             {
@@ -172,7 +174,8 @@ namespace Home
             byte[] encryptedData = AesEncryption.EncrypteByte(imageData, key64, iv64);
             SaveFileDialog sfd = new SaveFileDialog
             {
-                Filter = "Encrypted image data (*.txt)|*.txt"
+                Filter = "Encrypted image data (*.txt)|*.txt",
+                InitialDirectory = Properties.Settings.Default.DefaultFolder,
             };
 
             while (true)
@@ -217,6 +220,25 @@ namespace Home
             ImgDecrypted.Source = image;
 
 
+        }
+
+        private void MnuDefault_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Properties.Settings.Default.DefaultFolder;
+            ofd.FileName = "Select Folder";
+            ofd.CheckFileExists = false;
+            ofd.CheckPathExists = true;
+            ofd.ValidateNames = false;
+            ofd.FileName = "Folder Selection.";
+            ofd.Filter = "Folders|*.";
+
+            if (ofd.ShowDialog() == true)
+            {
+                // Save the selected folder path to settings
+                Properties.Settings.Default.DefaultFolder = System.IO.Path.GetDirectoryName(ofd.FileName);
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }

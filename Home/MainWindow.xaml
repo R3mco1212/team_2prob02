@@ -66,15 +66,10 @@
                         <Button Name="BtnEncrypt" Content="Start encryption" Grid.Column="2" Click="BtnEncrypt_Click"/>
                         <Button Name="BtnDecrypt" Content="Start Decryption" Grid.Column="3" Click="BtnDecrypt_Click"/>
                     </Grid>
-
-
                 </Grid>
-
             </TabItem>
             <TabItem Header="RSA">
-
             </TabItem>
         </TabControl>
     </DockPanel>
-
 </Window>

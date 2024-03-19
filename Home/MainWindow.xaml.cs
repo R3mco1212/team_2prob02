@@ -1,8 +1,11 @@
-﻿using System;
+﻿using ClassLibraryEncryptionTool;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using System.Text;
@@ -29,8 +32,102 @@ namespace Home
             InitializeComponent();
         }
 
-        public static byte[] ImageToByteArray(BitmapImage image)
+        private void BtnCreateKeyAndIv_Click(object sender, RoutedEventArgs e)
         {
+            Aes aes =  AesEncryption.CreateAes();
+            string keyBase64 = AesEncryption.AesToBase64(aes.Key);
+            string ivBase64 = AesEncryption.AesToBase64(aes.IV);
+            SaveFileDialog sfd = new SaveFileDialog()
+            {
+                Filter = "Aes key (*.txt)|*.txt"
+            };
+            string filepath = "";
+            while (true)
+            {
+                if (sfd.ShowDialog() == true)
+                {
+                    filepath = sfd.FileName;
+                    File.WriteAllText(filepath, keyBase64);
+                    MessageBox.Show("Key opgeslaan");
+                    break;
+                }
+                else
+                {
+                    MessageBox.Show("Je moet het key opslaan");
+                }
+            }
+            sfd = new SaveFileDialog()
+            {
+                Filter = "Aes IV (*.txt)|*.txt"
+            };
+            filepath = "";
+            while (true)
+            {
+                if (sfd.ShowDialog() == true)
+                {
+                    filepath = sfd.FileName;
+                    File.WriteAllText(filepath, ivBase64);
+                    MessageBox.Show("Iv opgeslaan");
+                    break;
+                }
+                else
+                {
+                    MessageBox.Show("Je moet het iv opslaan");
+                }
+            }
+        }
+
+        private void BtnSelectKey_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "Selecteer een Aes Key (*.txt)|*.txt"
+            };
+            if(ofd.ShowDialog() == true)
+            {
+                LblKey.Content = ofd.FileName;
+            }
+            else
+            {
+                MessageBox.Show("Geen key gekozen");
+            }
+        }
+
+        private void BtnSelectIv_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "Selecteer een Aes Iv (*.txt)|*.txt"
+            };
+            if (ofd.ShowDialog() == true)
+            {
+                LblIv.Content = ofd.FileName;
+            }
+            else
+            {
+                MessageBox.Show("Geen Iv gekozen");
+            }
+        }
+
+        private void BtnSelectImage_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "Images (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png"
+            };
+            if(ofd.ShowDialog() == true)
+            {
+                LblImagePath.Content = ofd.FileName;
+            }
+
+        }
+        public byte[] ImageToByteArray(BitmapImage image)
+        {
+            if (image == null || image.UriSource == null)
+            {
+                MessageBox.Show("Image is null / Geen source");
+                return null;
+            }
             byte[] imageData;
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(image));
@@ -41,76 +138,88 @@ namespace Home
             }
             return imageData;
         }
-        public static BitmapImage ByteArrayToImage(byte[] imageData)
+        public BitmapImage ByteArrayToImage(byte[] imageData)
         {
-            BitmapImage bitmap = new BitmapImage();
+            BitmapImage bitmapImage = new BitmapImage();
             using(MemoryStream ms = new MemoryStream(imageData))
             {
-                bitmap.BeginInit();
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.StreamSource = ms;
-                bitmap.EndInit();
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = ms;
+                bitmapImage.EndInit();
             }
-            return bitmap;
+            return bitmapImage;
         }
-        private void BtnTest_Click(object sender, RoutedEventArgs e)
+        private void BtnEncrypt_Click(object sender, RoutedEventArgs e)
         {
-            BitmapImage image = new BitmapImage(new Uri("Assets/images.jpeg",UriKind.RelativeOrAbsolute));
-            byte[] imagedata = ImageToByteArray(image);
-            using (Aes myAes = Aes.Create())
+            if (!File.Exists(LblImagePath.Content.ToString()))
             {
-                // key convert to base 64
-                string keyBase64 = Convert.ToBase64String(myAes.Key);
-                // iv convert to base 64
-                byte[] encryptedImage = EncryptBytes(imagedata, myAes.Key, myAes.IV);                
-                byte[] decryptedImage = DecryptStringFromBytes(encryptedImage,myAes.Key,myAes.IV);
-                BitmapImage decryptedBitmapImage = ByteArrayToImage(decryptedImage);
-                imgDecrypted.Source = decryptedBitmapImage;
+                MessageBox.Show("Image Bestaat niet");
+                return;
             }
-        }
-        static byte[] EncryptBytes(byte[] plainBytes, byte[] key, byte[] iv)
-        {
-            byte[] encrypted;
-            using (Aes aesAlg = Aes.Create())
+            if (!File.Exists(LblKey.Content.ToString()))
             {
-                aesAlg.Key = key;
-                aesAlg.IV = iv;
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                MessageBox.Show("Key bestaat niet");
+                return;
+            }
+            if (!File.Exists(LblIv.Content.ToString()))
+            {
+                MessageBox.Show("Iv bestaat niet");
+                return;
+            }
+            string imagePath = LblImagePath.Content.ToString();
+            BitmapImage bitmapImage = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
+            byte[] imageData = ImageToByteArray(bitmapImage);
+            string key64 = File.ReadAllText(LblKey.Content.ToString());
+            string iv64 = File.ReadAllText(LblIv.Content.ToString());
 
-                using(MemoryStream msEncrypt  = new MemoryStream())
+            byte[] encryptedData = AesEncryption.EncrypteByte(imageData, key64, iv64);
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Encrypted image data (*.txt)|*.txt";
+            while (true)
+            {
+                if (sfd.ShowDialog() == true)
                 {
-                    using(CryptoStream csEncrypt = new CryptoStream(msEncrypt,encryptor, CryptoStreamMode.Write))
-                    {
-                        csEncrypt.Write(plainBytes,0, plainBytes.Length);
-                        csEncrypt.FlushFinalBlock();
-                        encrypted = msEncrypt.ToArray();
-                    }
+                    string encryptedData64 = Convert.ToBase64String(encryptedData);
+                    File.WriteAllText(sfd.FileName, encryptedData64);
+                    MessageBox.Show("nice");
+                    break;
                 }
             }
-            return encrypted;
-        }
-        static byte[] DecryptStringFromBytes(byte[] cipherBytes, byte[] Key, byte[] IV)
-        {
-            byte[] decrypted;
-            using(Aes aesAlg = Aes.Create())
-            {
-                aesAlg.Key = Key;
-                aesAlg.IV = IV;
-                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
-                using(MemoryStream msDecrypt =  new MemoryStream(cipherBytes))
-                {
-                    using(CryptoStream csDecrypt =  new CryptoStream(msDecrypt,decryptor, CryptoStreamMode.Read))
-                    {
-                        using(MemoryStream msPlain = new MemoryStream())
-                        {
-                            csDecrypt.CopyTo(msPlain);
-                            decrypted = msPlain.ToArray();
-                        }
-                    }
-                }
+        }
+
+
+        private void BtnDecrypt_Click(object sender, RoutedEventArgs e)
+        {
+            if (!File.Exists(LblKey.Content.ToString()))
+            {
+                MessageBox.Show("Key bestaat niet");
+                return;
             }
-            return decrypted;
+            if (!File.Exists(LblIv.Content.ToString()))
+            {
+                MessageBox.Show("Iv bestaat niet");
+                return;
+            }
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "Selecteer de encrypted imageDate (*.txt)|*.txt"
+            };
+            string image64Path = "";
+            if(ofd.ShowDialog() == true)
+            {
+                image64Path = ofd.FileName;
+            }
+            string image64 = File.ReadAllText(image64Path);
+            string keyPath = File.ReadAllText(LblKey.Content.ToString());
+            string ivPath = File.ReadAllText(LblIv.Content.ToString());
+            byte[] imageData = AesEncryption.DecryptData(image64, keyPath, ivPath);
+
+            BitmapImage image = ByteArrayToImage(imageData);
+            ImgDecrypted.Source = image;
+
+
         }
     }
 }

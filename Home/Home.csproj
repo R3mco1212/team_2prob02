@@ -99,5 +99,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClassLibraryEncryptionTool\ClassLibraryEncryptionTool.csproj">
+      <Project>{9eceefc4-310e-419d-8ed6-04aa1b41e9a2}</Project>
+      <Name>ClassLibraryEncryptionTool</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -41,13 +41,11 @@ namespace Home
             {
                 Filter = "Aes key (*.txt)|*.txt"
             };
-            string filepath = "";
             while (true)
             {
                 if (sfd.ShowDialog() == true)
                 {
-                    filepath = sfd.FileName;
-                    File.WriteAllText(filepath, keyBase64);
+                    File.WriteAllText(sfd.FileName, keyBase64);
                     MessageBox.Show("Key opgeslaan");
                     break;
                 }
@@ -60,13 +58,11 @@ namespace Home
             {
                 Filter = "Aes IV (*.txt)|*.txt"
             };
-            filepath = "";
             while (true)
             {
                 if (sfd.ShowDialog() == true)
                 {
-                    filepath = sfd.FileName;
-                    File.WriteAllText(filepath, ivBase64);
+                    File.WriteAllText(sfd.FileName, ivBase64);
                     MessageBox.Show("Iv opgeslaan");
                     break;
                 }
@@ -174,8 +170,11 @@ namespace Home
             string iv64 = File.ReadAllText(LblIv.Content.ToString());
 
             byte[] encryptedData = AesEncryption.EncrypteByte(imageData, key64, iv64);
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "Encrypted image data (*.txt)|*.txt";
+            SaveFileDialog sfd = new SaveFileDialog
+            {
+                Filter = "Encrypted image data (*.txt)|*.txt"
+            };
+
             while (true)
             {
                 if (sfd.ShowDialog() == true)
@@ -186,9 +185,7 @@ namespace Home
                     break;
                 }
             }
-
         }
-
 
         private void BtnDecrypt_Click(object sender, RoutedEventArgs e)
         {

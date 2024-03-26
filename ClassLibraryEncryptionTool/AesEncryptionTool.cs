@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ClassLibraryEncryptionTool
 {
-    public static class AesEncryption
+    public static class AesEncryptionTool
     {
 
         public static Aes CreateAes()

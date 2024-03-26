@@ -34,9 +34,9 @@ namespace Home
 
         private void BtnCreateKeyAndIv_Click(object sender, RoutedEventArgs e)
         {
-            Aes aes =  AesEncryption.CreateAes();
-            string keyBase64 = AesEncryption.AesToBase64(aes.Key);
-            string ivBase64 = AesEncryption.AesToBase64(aes.IV);
+            Aes aes =  AesEncryptionTool.CreateAes();
+            string keyBase64 = AesEncryptionTool.AesToBase64(aes.Key);
+            string ivBase64 = AesEncryptionTool.AesToBase64(aes.IV);
             SaveFileDialog sfd = new SaveFileDialog()
             {
                 Filter = "Aes key (*.txt)|*.txt"
@@ -171,7 +171,7 @@ namespace Home
             string key64 = File.ReadAllText(LblKey.Content.ToString());
             string iv64 = File.ReadAllText(LblIv.Content.ToString());
 
-            byte[] encryptedData = AesEncryption.EncrypteByte(imageData, key64, iv64);
+            byte[] encryptedData = AesEncryptionTool.EncrypteByte(imageData, key64, iv64);
             SaveFileDialog sfd = new SaveFileDialog
             {
                 Filter = "Encrypted image data (*.txt)|*.txt",
@@ -214,7 +214,7 @@ namespace Home
             string image64 = File.ReadAllText(image64Path);
             string keyPath = File.ReadAllText(LblKey.Content.ToString());
             string ivPath = File.ReadAllText(LblIv.Content.ToString());
-            byte[] imageData = AesEncryption.DecryptData(image64, keyPath, ivPath);
+            byte[] imageData = AesEncryptionTool.DecryptData(image64, keyPath, ivPath);
 
             BitmapImage image = ByteArrayToImage(imageData);
             ImgDecrypted.Source = image;

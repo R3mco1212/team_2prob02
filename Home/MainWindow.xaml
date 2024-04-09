@@ -69,7 +69,29 @@
                 </Grid>
             </TabItem>
             <TabItem Header="RSA">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Button Content="Genereer RSA Keys" Grid.Row="0" Click="GenerateRSAKeys_Click"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="1">
+                        <Button Content="Selecteer Public Key" Click="SelectPublicKey_Click"/>
+                        <Label Content="{Binding SelectedPublicKey}" Margin="5"/>
+                        <Button Content="Selecteer Private Key" Click="SelectPrivateKey_Click"/>
+                        <Label Content="{Binding SelectedPrivateKey}" Margin="5"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Button Content="Start Encryptie" Click="StartEncryption_Click"/>
+                        <Button Content="Start Decryptie" Click="StartDecryption_Click" Margin="5,0,0,0"/>
+                    </StackPanel>
+                    <TextBox Grid.Row="3" Height="100" VerticalScrollBarVisibility="Auto"
+                 IsReadOnly="True" Text="{Binding EncryptionDecryptionResult}"/>
+                </Grid>
             </TabItem>
+
         </TabControl>
     </DockPanel>
 </Window>

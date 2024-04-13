@@ -48,12 +48,12 @@ namespace Home
                 if (sfd.ShowDialog() == true)
                 {
                     File.WriteAllText(sfd.FileName, keyBase64);
-                    MessageBox.Show("Key opgeslaan");
+                    MessageBox.Show("Key opgeslaan","Success");
                     break;
                 }
                 else
                 {
-                    MessageBox.Show("Je moet het key opslaan");
+                    MessageBox.Show("Je moet het key opslaan","Error");
                 }
             }
             sfd = new SaveFileDialog()
@@ -65,12 +65,12 @@ namespace Home
                 if (sfd.ShowDialog() == true)
                 {
                     File.WriteAllText(sfd.FileName, ivBase64);
-                    MessageBox.Show("Iv opgeslaan");
+                    MessageBox.Show("Iv opgeslaan","Success");
                     break;
                 }
                 else
                 {
-                    MessageBox.Show("Je moet het iv opslaan");
+                    MessageBox.Show("Je moet het iv opslaan","Error");
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace Home
 			}
 			else
 			{
-				MessageBox.Show("Geen key gekozen");
+				MessageBox.Show("Geen key gekozen","Error");
 			}
 		}
 
@@ -102,6 +102,10 @@ namespace Home
             {
                 LblImagePath.Content = ofd.FileName;
             }
+			else
+			{
+				MessageBox.Show("Geen image gekozen","Error");
+			}
 
         }
 
@@ -118,7 +122,7 @@ namespace Home
 			}
 			else
 			{
-				MessageBox.Show("Geen Iv gekozen");
+				MessageBox.Show("Geen Iv gekozen","Error");
 			}
 		}
 
@@ -155,42 +159,50 @@ namespace Home
 		{
 			if (!File.Exists(LblImagePath.Content.ToString()))
 			{
-				MessageBox.Show("Image Bestaat niet");
+				MessageBox.Show("Image Bestaat niet", "Error");
 				return;
 			}
 			if (!File.Exists(LblKey.Content.ToString()))
 			{
-				MessageBox.Show("Key bestaat niet");
-				return;
+				MessageBox.Show("Key bestaat niet", "Error");
+                return;
 			}
 			if (!File.Exists(LblIv.Content.ToString()))
 			{
-				MessageBox.Show("Iv bestaat niet");
+				MessageBox.Show("Iv bestaat niet","Error");
 				return;
 			}
-			string imagePath = LblImagePath.Content.ToString();
-			BitmapImage bitmapImage = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
-			byte[] imageData = ImageToByteArray(bitmapImage);
-			string key64 = File.ReadAllText(LblKey.Content.ToString());
-			string iv64 = File.ReadAllText(LblIv.Content.ToString());
-
-			byte[] encryptedData = AesEncryptionTool.EncrypteByte(imageData, key64, iv64);
-			SaveFileDialog sfd = new SaveFileDialog
+			try
 			{
-				Filter = "Encrypted image data (*.txt)|*.txt",
-				InitialDirectory = Properties.Settings.Default.DefaultFolder,
-			};
+                string imagePath = LblImagePath.Content.ToString();
+                BitmapImage bitmapImage = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
+                byte[] imageData = ImageToByteArray(bitmapImage);
+                string key64 = File.ReadAllText(LblKey.Content.ToString());
+                string iv64 = File.ReadAllText(LblIv.Content.ToString());
 
-			while (true)
+                byte[] encryptedData = AesEncryptionTool.EncrypteByte(imageData, key64, iv64);
+                SaveFileDialog sfd = new SaveFileDialog
+                {
+                    Filter = "Encrypted image data (*.txt)|*.txt",
+                    InitialDirectory = Properties.Settings.Default.DefaultFolder,
+                };
+
+                while (true)
+                {
+                    if (sfd.ShowDialog() == true)
+                    {
+                        string encryptedData64 = Convert.ToBase64String(encryptedData);
+                        File.WriteAllText(sfd.FileName, encryptedData64);
+                        MessageBox.Show("Encrypted image success","Success",MessageBoxButton.OK);
+                        break;
+                    }
+                }
+            }
+			catch(CryptographicException ex)
 			{
-				if (sfd.ShowDialog() == true)
-				{
-					string encryptedData64 = Convert.ToBase64String(encryptedData);
-					File.WriteAllText(sfd.FileName, encryptedData64);
-					MessageBox.Show("nice");
-					break;
-				}
-			}
+				MessageBox.Show("Error: " + ex.Message,"Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
 		}
 
 
@@ -198,12 +210,12 @@ namespace Home
 		{
 			if (!File.Exists(LblKey.Content.ToString()))
 			{
-				MessageBox.Show("Key bestaat niet");
+				MessageBox.Show("Key bestaat niet", "Error");
 				return;
 			}
 			if (!File.Exists(LblIv.Content.ToString()))
 			{
-				MessageBox.Show("Iv bestaat niet");
+				MessageBox.Show("Iv bestaat niet", "Error");
 				return;
 			}
 			OpenFileDialog ofd = new OpenFileDialog()
@@ -215,13 +227,31 @@ namespace Home
 			{
 				image64Path = ofd.FileName;
 			}
-			string image64 = File.ReadAllText(image64Path);
-			string keyPath = File.ReadAllText(LblKey.Content.ToString());
-			string ivPath = File.ReadAllText(LblIv.Content.ToString());
-			byte[] imageData = AesEncryptionTool.DecryptData(image64, keyPath, ivPath);
+			try
+			{
+				if (!string.IsNullOrEmpty(image64Path))
+				{
+                    string image64 = File.ReadAllText(image64Path);
+                    if (!string.IsNullOrEmpty(image64))
+                    {
+                        string keyPath = File.ReadAllText(LblKey.Content.ToString());
+                        string ivPath = File.ReadAllText(LblIv.Content.ToString());
+                        byte[] imageData = AesEncryptionTool.DecryptData(image64, keyPath, ivPath);
 
-			BitmapImage image = ByteArrayToImage(imageData);
-			ImgDecrypted.Source = image;
+                        BitmapImage image = ByteArrayToImage(imageData);
+                        ImgDecrypted.Source = image;
+                    }
+                    else
+                    {
+                        MessageBox.Show("De encrypted imageData is leeg!", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+            }
+			catch(CryptographicException ex)
+			{
+				MessageBox.Show("Error: " + ex.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Warning);
+			}
+
 
 
 		}

@@ -21,54 +21,76 @@ namespace ClassLibraryEncryptionTool
         }
         public static byte[] Base64ToByte(string base64)
         {
-            byte[] aesKey = Convert.FromBase64String(base64);
-            return aesKey;
+            try
+            {
+                return Convert.FromBase64String(base64);
+
+            }
+            catch(FormatException ex)
+            {
+                throw new CryptographicException("Invalid base64 string.", ex);
+            }
         }
 
         public static byte[] EncrypteByte(byte[] imagedata, string key64, string iv64)
         {
-            byte[] aesKey = Base64ToByte(key64);
-            byte[] aesIv = Base64ToByte(iv64);
-            using(Aes aes = Aes.Create())
+            try
             {
-                aes.Key = aesKey;
-                aes.IV = aesIv;
-                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
-                using(MemoryStream msEncrypt = new MemoryStream())
+                byte[] aesKey = Base64ToByte(key64);
+                byte[] aesIv = Base64ToByte(iv64);
+                using (Aes aes = Aes.Create())
                 {
-                    using(CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        csEncrypt.Write(imagedata, 0, imagedata.Length);
-                        csEncrypt.FlushFinalBlock();
-                        return msEncrypt.ToArray();
-                    }
-                }
-            }
-        }
-        public static byte[] DecryptData(string image64, string key64, string iv64)
-        {
-            byte[] imageData = Base64ToByte(image64);
-            byte[] aesKey = Base64ToByte(key64);
-            byte[] aesIv = Base64ToByte(iv64);
+                    aes.Key = aesKey;
+                    aes.IV = aesIv;
+                    ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
-            using(Aes aes = Aes.Create())
-            {
-                aes.Key = aesKey;
-                aes.IV = aesIv;
-                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key,aes.IV);
-
-                using(MemoryStream msDecrypt = new MemoryStream(imageData))
-                {
-                    using(CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (MemoryStream msEncrypt = new MemoryStream())
                     {
-                        using (MemoryStream msPlain = new MemoryStream())
+                        using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                         {
-                            csDecrypt.CopyTo(msPlain);
-                            return msPlain.ToArray();
+                            csEncrypt.Write(imagedata, 0, imagedata.Length);
+                            csEncrypt.FlushFinalBlock();
+                            return msEncrypt.ToArray();
                         }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                throw new CryptographicException("Encryption failed.", ex);
+            }
+
+        }
+        public static byte[] DecryptData(string image64, string key64, string iv64)
+        {
+            try
+            {
+                byte[] imageData = Base64ToByte(image64);
+                byte[] aesKey = Base64ToByte(key64);
+                byte[] aesIv = Base64ToByte(iv64);
+
+                using (Aes aes = Aes.Create())
+                {
+                    aes.Key = aesKey;
+                    aes.IV = aesIv;
+                    ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                    using (MemoryStream msDecrypt = new MemoryStream(imageData))
+                    {
+                        using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                        {
+                            using (MemoryStream msPlain = new MemoryStream())
+                            {
+                                csDecrypt.CopyTo(msPlain);
+                                return msPlain.ToArray();
+                            }
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new CryptographicException("Decryption failed.", ex);
             }
         }
     }

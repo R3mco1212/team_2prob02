@@ -36,22 +36,35 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <Label Content="Gekozen Key:" Grid.Row="0" VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
-                        <Label Content="Gekozen Iv:" Grid.Row="1" VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
-                        <Label Name="LblKey" Content="Geen gekozen Key" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"
+                        <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Header="Gekozen key:" Margin="5">
+                            <Label Name="LblKey" Content="Geen Key gekozen "  VerticalAlignment="Center"
                                HorizontalContentAlignment="Center"/>
-                        <Label Name="LblIv" Content="Geen gekozen Iv" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                  Header="Gekozen Iv:" Margin="5">
+                            <Label Name="LblIv" Content="Geen Iv gekozen" VerticalAlignment="Center"
                                HorizontalContentAlignment="Center"/>
-                        <Button Name="BtnSelectKey" Content="Select key" Grid.Row="0" Grid.Column="2" Click="BtnSelectKey_Click"/>
-                        <Button Name="BtnSelectIv" Content="Select Iv" Grid.Row="1" Grid.Column="2" Click="BtnSelectIv_Click"/>
+                        </GroupBox>
+
+
+
+                        <Button Name="BtnSelectKey" Content="Select key" Margin="15"
+                                Grid.Row="0" Grid.Column="2" Click="BtnSelectKey_Click"/>
+                        <Button Name="BtnSelectIv" Content="Select Iv" Margin="15"
+                                Grid.Row="1" Grid.Column="2" Click="BtnSelectIv_Click"/>
                     </Grid>
-                    <Label Content="Gekozen Image" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"
+                    <GroupBox  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                               Header="Gekozen Image" Margin="5">
+                        <Label Name="LblImagePath" Content="Geen Image gekozen" VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>
-                    <Label Name="LblImagePath" Content="Geen gekozen Image" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
-                    <Image Name="ImgDecrypted" Grid.Row="1" Grid.Column="2"/>
+                    </GroupBox>
+
+
+                    <GroupBox  Grid.Row="1" Grid.Column="2" Header="Decrypted image"
+                               Margin="5">
+                        <Image Name="ImgDecrypted"/>
+                    </GroupBox>
 
                     <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>

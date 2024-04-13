@@ -9,7 +9,8 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Settings">
-                <MenuItem Name="MnuDefault" Header="Select default folder" Click="MnuDefault_Click"/>
+                <MenuItem Name="MnuDefault" Header="Selecteer default folder" Click="MnuDefault_Click"/>
+                <MenuItem Name="MnuEncryptieDecryptieFolder" Header="Selecteer folder voor resultaat encryptie en decryptie" Click="MnuEncryptieDecryptieFolder_Click"/>
             </MenuItem>
         </Menu>
         <TabControl>
@@ -69,6 +70,39 @@
                 </Grid>
             </TabItem>
             <TabItem Header="RSA">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <StackPanel VerticalAlignment="Top">
+                        <Label Content="Naam Sleutel: " Margin="6 0 0 0"/>
+                        <TextBox x:Name="TbNaamKey" VerticalAlignment="Bottom" Margin="10 0 10 5" Height="30" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                    <Button x:Name="BtnGenerateRSAKey" Content="Create RSA key" Height="50" VerticalAlignment="Bottom" Click="BtnGenerateRSAKey_Click" Margin="10"/>
+                    <Button x:Name="BtnSelecteerSleutel" Content="Selecteer key" Margin="10" Grid.Column="2" Click="BtnSelecteerSleutel_Click" Grid.Row="2" IsEnabled="False"/>
+                    <StackPanel Grid.Row="2">
+                        <Button x:Name="BtnLaadPublicKey" Content="Laad public key" Height="50" VerticalAlignment="Top" Click="BtnLaadPublicKey_Click" Margin="10 10 10 5"/>
+                        <Button x:Name="BtnLaadPrivateKey" Content="Laad private key" Height="50" VerticalAlignment="Bottom" Click="BtnLaadPrivateKey_Click" Margin="10"/>
+                    </StackPanel>
+                    <Button x:Name="BtnKiesBestand" Content="Kies bestand" Margin="10" Grid.Column="2" Click="BtnKiesBestand_Click" Grid.Row="1" IsEnabled="False"/>
+                    <Button x:Name="BtnEncrypteer" Content="Encrypt" Margin="10" Grid.Column="2" Click="BtnEncrypteer_Click" IsEnabled="False"/>
+                    <Button x:Name="BtnDecrypteer" Content="Kies bestand en start de decryption" Margin="10" Grid.Column="1" Grid.Row="2" Click="BtnDecrypteer_Click" IsEnabled="False"/>
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                        <Label x:Name="LbCipherText" Content="Naam bestand ciphertext (Encrypt)" Margin="6 0 0 0" Foreground="Red"/>
+                        <TextBox x:Name="TbNaamCipher" VerticalAlignment="Bottom" Margin="10 0 10 0" Height="30" IsEnabled="False" VerticalContentAlignment="Center"/>
+                        <Label x:Name="LbPlainText" Content="Naam bestand plaintext (Decrypt)" Margin="6 0 0 0" Foreground="Red"/>
+                        <TextBox x:Name="TbNaamPlain" VerticalAlignment="Bottom" Margin="10 0 10 5" Height="30" IsEnabled="False" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                    <ListBox Grid.Column="1" Name="LbSleutelList" Grid.RowSpan="2" Margin="10"></ListBox>
+                    <Label Name="LblBestand" Grid.Row="0" Grid.Column="2" VerticalAlignment="Bottom" Margin="0 0 0 10" HorizontalContentAlignment="Center" Width="220" FontSize="9"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </DockPanel>

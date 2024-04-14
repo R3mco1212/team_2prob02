@@ -54,6 +54,11 @@
                         <Button Name="BtnSelectIv" Content="Select Iv" Margin="15"
                                 Grid.Row="1" Grid.Column="2" Click="BtnSelectIv_Click"/>
                     </Grid>
+                    <TextBlock Grid.Row="2" 
+                   Text="Hashing Algoritme: SHA-256"
+                   HorizontalAlignment="Center" 
+                   Margin="0,10,0,97" Grid.Column="1" Foreground="#FFFF0505"/>
+
                     <GroupBox  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
                                Header="Gekozen Image" Margin="5">
                         <Label Name="LblImagePath" Content="Geen Image gekozen" VerticalAlignment="Center"
@@ -127,5 +132,6 @@
                 </Grid>
             </TabItem>
         </TabControl>
+
     </DockPanel>
 </Window>

@@ -520,5 +520,14 @@ namespace Home
             }
         }
 
+        private void BtnGenerateAesKey_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BtnGenerateRsaKeys_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

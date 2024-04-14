@@ -34,6 +34,8 @@ namespace Home
             InitializeComponent();
         }
 
+		#region AES encryptie
+
 		private void BtnCreateKeyAndIv_Click(object sender, RoutedEventArgs e)
         {
             Aes aes =  AesEncryptionTool.CreateAes();
@@ -272,12 +274,12 @@ namespace Home
 
             if (ofd.ShowDialog() == true)
             {
-                // Save the selected folder path to settings
                 Properties.Settings.Default.DefaultFolder = System.IO.Path.GetDirectoryName(ofd.FileName);
                 Properties.Settings.Default.Save();
             }
         }
 
+		#endregion
 
 		#region RSA encryptie
 
@@ -294,19 +296,18 @@ namespace Home
 				bool keySaved = ret.SaveKeys(folderName, keyName);
 				if (keySaved == true)
 				{
-					MessageBox.Show("RSA sleutels gegenereerd en opgeslagen jou gekozen map");
+					MessageBox.Show("RSA sleutels gegenereerd en opgeslagen in de standaard map");
 				}
 				else
 				{
-					MessageBox.Show("Er bestaan al sleutels met deze naam kies een andere naam aub");
+					MessageBox.Show("er bestaan al sleutels met deze naam kies een andere naam aub");
 				}
 			}
 			else
 			{
-				MessageBox.Show("Gelieve eerst een naam te kiezen voor de sleutels");
+				MessageBox.Show("gelieve eerst een naam te kiezen voor de sleutels");
 			}
 		}
-
 
 		private void MnuEncryptieDecryptieFolder_Click(object sender, RoutedEventArgs e)
 		{
@@ -328,6 +329,8 @@ namespace Home
 			BtnSelecteerSleutel.IsEnabled = true;
 			TbNaamCipher.IsEnabled = true;
 			TbNaamPlain.IsEnabled = false;
+			LblBestand.Content = "";
+			filePath = null;
 			LbCipherText.Foreground = new SolidColorBrush(Colors.LimeGreen);
 			LbPlainText.Foreground = new SolidColorBrush(Colors.Red);
 			string[] files = Directory.GetFiles(Properties.Settings.Default.DefaultFolder, "publickey - *.xml");
@@ -354,6 +357,7 @@ namespace Home
 			TbNaamCipher.IsEnabled = false;
 			TbNaamPlain.IsEnabled = true;
 			filePath = null;
+			LblBestand.Content = "";
 			LbPlainText.Foreground = new SolidColorBrush(Colors.LimeGreen);
 			LbCipherText.Foreground = new SolidColorBrush(Colors.Red);
 			string[] files = Directory.GetFiles(Properties.Settings.Default.DefaultFolder, "privatekey - *.xml");
@@ -368,7 +372,9 @@ namespace Home
 			LbSleutelList.ItemsSource = keyNames;
 
 		}
+
 		private string filePath;
+
 		private void CheckButtonEncrypt()
 		{
 			if (!string.IsNullOrEmpty(filePath) && !string.IsNullOrEmpty(selectedKeyFilePath))
@@ -393,10 +399,10 @@ namespace Home
 			CheckButtonEncrypt();
 			CheckButtonDecrypt();
 		}
+
 		private void BtnKiesBestand_Click(object sender, RoutedEventArgs e)
 		{
 			var openFileDialog = new OpenFileDialog();
-			openFileDialog.DefaultExt = ".txt";
 			openFileDialog.InitialDirectory = Properties.Settings.Default.DefaultFolder;
 			if (openFileDialog.ShowDialog() == true)
 			{
@@ -411,34 +417,43 @@ namespace Home
 
 			TbNaamPlain.IsEnabled = false;
 			BtnKiesBestand.IsEnabled = false;
-			string filePath = LblBestand.Content.ToString();
+			string filePathText = LblBestand.Content.ToString();
 			string publicKey = File.ReadAllText(selectedKeyFilePath);
-			string plainText = File.ReadAllText(filePath);
+			string plainText = File.ReadAllText(filePathText);
 			string resultNameC = TbNaamCipher.Text;
 			if (!string.IsNullOrEmpty(resultNameC))
 			{
-				if (!string.IsNullOrEmpty(plainText) || !string.IsNullOrEmpty(publicKey))
+				string resultFilePath = System.IO.Path.Combine(Properties.Settings.Default.DefaultResultFolder, "Encrypted - " + resultNameC + ".txt");
+				if (!File.Exists(resultFilePath))
 				{
-					var output = ret.Encrypt(plainText, publicKey);
-					string resultFilePath = System.IO.Path.Combine(Properties.Settings.Default.DefaultResultFolder, "Encrypted - " + resultNameC + ".txt");
-					File.WriteAllText(resultFilePath, output);
-					MessageBox.Show($"Encryptie process is voltooid het versleutelde bestand bevindt zich in {resultFilePath}");
-					LbSleutelList.IsEnabled = false;
-					LbSleutelList.ItemsSource = null;
-					BtnSelecteerSleutel.IsEnabled = false;
-					BtnKiesBestand.IsEnabled = false;
-					BtnEncrypteer.IsEnabled = false;
-					LblBestand.Content = "";
-					TbNaamCipher.Text = null;
-					LbCipherText.Foreground = new SolidColorBrush(Colors.Red);
+					if (!string.IsNullOrEmpty(plainText) || !string.IsNullOrEmpty(publicKey))
+					{
+						var output = ret.Encrypt(plainText, publicKey);
+						File.WriteAllText(resultFilePath, output);
+						MessageBox.Show($"encryptie process is voltooid het versleutelde bestand bevindt zich in {resultFilePath}");
+						LbSleutelList.IsEnabled = false;
+						LbSleutelList.ItemsSource = null;
+						BtnSelecteerSleutel.IsEnabled = false;
+						BtnKiesBestand.IsEnabled = false;
+						BtnEncrypteer.IsEnabled = false;
+						filePath = null;
+						LblBestand.Content = "";
+						TbNaamCipher.Text = null;
+						LbCipherText.Foreground = new SolidColorBrush(Colors.Red);
+					}
+				}
+				else
+				{
+					MessageBox.Show("er bestaat al een bestand met deze naam kies iets anders");
 				}
 			}
 			else
 			{
-				MessageBox.Show("vergeet geen naam te geven voor het geencrypteerde bestand");
+				MessageBox.Show("vergeet geen naam te geven voor het bestand wat de encryptie bevat");
 				LbCipherText.Foreground = new SolidColorBrush(Colors.LimeGreen);
 			}
 		}
+
 		private void BtnDecrypteer_Click(object sender, RoutedEventArgs e)
 		{
 			string privateKey = File.ReadAllText(selectedKeyFilePath);
@@ -451,26 +466,33 @@ namespace Home
 				string resultNameP = TbNaamPlain.Text;
 				if (!string.IsNullOrEmpty(resultNameP))
 				{
-					if (!string.IsNullOrEmpty(cipherText) || !string.IsNullOrEmpty(privateKey))
+					string resultFilePath = System.IO.Path.Combine(Properties.Settings.Default.DefaultResultFolder, "Decrypted - " + resultNameP + ".txt");
+					if (!File.Exists(resultFilePath))
 					{
-						var output = ret.Decrypt(cipherText, privateKey);
-						if (output != null)
+						if (!string.IsNullOrEmpty(cipherText) || !string.IsNullOrEmpty(privateKey))
 						{
-							string resultFilePath = System.IO.Path.Combine(Properties.Settings.Default.DefaultResultFolder, "Decrypted - " + resultNameP + ".txt");
-							File.WriteAllText(resultFilePath, output);
-							MessageBox.Show($"Encryptie process is voltooid het versleutelde bestand bevindt zich in {resultFilePath}");
-							LbPlainText.Foreground = new SolidColorBrush(Colors.Red);
-							TbNaamPlain.Text = "";
-							LbSleutelList.IsEnabled = false;
-							LbSleutelList = null;
-							BtnDecrypteer.IsEnabled = false;
-							TbNaamPlain.Text = null;
+							var output = ret.Decrypt(cipherText, privateKey);
+							if (output != null)
+							{
+								File.WriteAllText(resultFilePath, output);
+								MessageBox.Show($"encryptie process is voltooid het versleutelde bestand bevindt zich in {resultFilePath}");
+								LbPlainText.Foreground = new SolidColorBrush(Colors.Red);
+								LbSleutelList.IsEnabled = false;
+								LbSleutelList.ItemsSource = null;
+								BtnDecrypteer.IsEnabled = false;
+								TbNaamPlain.Text = null;
+								BtnSelecteerSleutel.IsEnabled = false;
+							}
+							else
+							{
+								MessageBox.Show("de gekozen private key is onjuist kies een andere private key");
+								LbSleutelList.IsEnabled = false;
+							}
 						}
-						else
-						{
-							MessageBox.Show("De gekozen private key is onjuist kies een andere private key");
-							LbSleutelList.IsEnabled = false;
-						}
+					}
+					else
+					{
+						MessageBox.Show("er bestaat al een bestand met deze naam kies iets anders");
 					}
 				}
 				else
@@ -483,43 +505,52 @@ namespace Home
 
         #endregion
 
-        private void BtnValidateHash_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog ofd1 = new OpenFileDialog
-            {
-                Title = "Selecteer het eerste bestand voor hash-vergelijking",
-                Filter = "Alle bestanden (*.*)|*.*"
-            };
+		#region Hash
 
-            OpenFileDialog ofd2 = new OpenFileDialog
-            {
-                Title = "Selecteer het tweede bestand voor hash-vergelijking",
-                Filter = "Alle bestanden (*.*)|*.*"
-            };
+		private void BtnHashRSA_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog ofd1 = new OpenFileDialog
+			{
+				Title = "Selecteer het eerste bestand voor hash-vergelijking",
+				Filter = "Alle bestanden (*.*)|*.*"
+			};
 
-            string file1Path = ofd1.ShowDialog() == true ? ofd1.FileName : null;
-            string file2Path = ofd2.ShowDialog() == true ? ofd2.FileName : null;
+			OpenFileDialog ofd2 = new OpenFileDialog
+			{
+				Title = "Selecteer het tweede bestand voor hash-vergelijking",
+				Filter = "Alle bestanden (*.*)|*.*"
+			};
+			string file1Path = ofd1.ShowDialog() == true ? ofd1.FileName : null;
+			string file2Path = ofd2.ShowDialog() == true ? ofd2.FileName : null;
 
-            if (!string.IsNullOrEmpty(file1Path) && !string.IsNullOrEmpty(file2Path))
-            {
-                string hash1 = AesEncryptionTool.GenerateHash(File.ReadAllBytes(file1Path));
-                string hash2 = AesEncryptionTool.GenerateHash(File.ReadAllBytes(file2Path));
+			if (!string.IsNullOrEmpty(file1Path) && !string.IsNullOrEmpty(file2Path))
+			{
+				byte[] file1Bytes = File.ReadAllBytes(file1Path);
+				byte[] file2Bytes = File.ReadAllBytes(file2Path);
 
-                if (hash1 == hash2)
-                {
-                    TxtHashResult.Text = "De hashes komen overeen. De bestanden zijn hetzelfde.";
-                }
-                else
-                {
-                    TxtHashResult.Text = "De hashes komen niet overeen. De bestanden zijn verschillend.";
-                }
-            }
-            else
-            {
-                MessageBox.Show("Selecteer alstublieft twee geldige bestanden.", "Bestanden Nodig", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+				string hash1 = RsaEncryptionTool.GenerateHashRSA(file1Bytes);
+				string hash2 = RsaEncryptionTool.GenerateHashRSA(file2Bytes);
 
-       
-    }
+				LblHashEncrypt.Text = hash1;
+				LblHashDecrypt.Text = hash2;
+
+				if (hash1 == hash2)
+				{
+					LblHashEncrypt.Foreground = Brushes.LimeGreen;
+					LblHashDecrypt.Foreground = Brushes.LimeGreen;
+				}
+				else
+				{
+					LblHashEncrypt.Foreground = Brushes.Red;
+					LblHashDecrypt.Foreground = Brushes.Red;
+				}
+			}
+			else
+			{
+				MessageBox.Show("Selecteer alstublieft twee geldige bestanden.", "Bestanden Nodig", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+		}
+
+		#endregion
+	}
 }

@@ -240,9 +240,8 @@ namespace Home
                         string ivPath = File.ReadAllText(LblIv.Content.ToString());
                         byte[] imageData = AesEncryptionTool.DecryptData(image64, keyPath, ivPath);
 
-                        // Genereer de hash van de gedecrypteerde data
                         string decryptedHash = AesEncryptionTool.GenerateHash(imageData);
-                        TxtDecryptedHash.Text = decryptedHash; // Update de UI met de gegenereerde hash
+                        TxtDecryptedHash.Text = decryptedHash;
 
                         BitmapImage image = ByteArrayToImage(imageData);
                         ImgDecrypted.Source = image;
@@ -503,9 +502,45 @@ namespace Home
 
 		}
 
-        #endregion
+		#endregion
 
 		#region Hash
+		private void BtnValidateHash_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog ofd1 = new OpenFileDialog
+			{
+				Title = "Selecteer het eerste bestand voor hash-vergelijking",
+				Filter = "Alle bestanden (*.*)|*.*"
+			};
+
+			OpenFileDialog ofd2 = new OpenFileDialog
+			{
+				Title = "Selecteer het tweede bestand voor hash-vergelijking",
+				Filter = "Alle bestanden (*.*)|*.*"
+			};
+
+			string file1Path = ofd1.ShowDialog() == true ? ofd1.FileName : null;
+			string file2Path = ofd2.ShowDialog() == true ? ofd2.FileName : null;
+
+			if (!string.IsNullOrEmpty(file1Path) && !string.IsNullOrEmpty(file2Path))
+			{
+				string hash1 = AesEncryptionTool.GenerateHash(File.ReadAllBytes(file1Path));
+				string hash2 = AesEncryptionTool.GenerateHash(File.ReadAllBytes(file2Path));
+
+				if (hash1 == hash2)
+				{
+					TxtHashResult.Text = "De hashes komen overeen. De bestanden zijn hetzelfde.";
+				}
+				else
+				{
+					TxtHashResult.Text = "De hashes komen niet overeen. De bestanden zijn verschillend.";
+				}
+			}
+			else
+			{
+				MessageBox.Show("Selecteer alstublieft twee geldige bestanden.", "Bestanden Nodig", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+		}
 
 		private void BtnHashRSA_Click(object sender, RoutedEventArgs e)
 		{

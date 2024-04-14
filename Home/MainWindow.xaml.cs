@@ -481,7 +481,44 @@ namespace Home
 
 		}
 
-		#endregion
+        #endregion
 
-	}
+        private void BtnValidateHash_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd1 = new OpenFileDialog
+            {
+                Title = "Selecteer het eerste bestand voor hash-vergelijking",
+                Filter = "Alle bestanden (*.*)|*.*"
+            };
+
+            OpenFileDialog ofd2 = new OpenFileDialog
+            {
+                Title = "Selecteer het tweede bestand voor hash-vergelijking",
+                Filter = "Alle bestanden (*.*)|*.*"
+            };
+
+            string file1Path = ofd1.ShowDialog() == true ? ofd1.FileName : null;
+            string file2Path = ofd2.ShowDialog() == true ? ofd2.FileName : null;
+
+            if (!string.IsNullOrEmpty(file1Path) && !string.IsNullOrEmpty(file2Path))
+            {
+                string hash1 = AesEncryptionTool.GenerateHash(File.ReadAllBytes(file1Path));
+                string hash2 = AesEncryptionTool.GenerateHash(File.ReadAllBytes(file2Path));
+
+                if (hash1 == hash2)
+                {
+                    TxtHashResult.Text = "De hashes komen overeen. De bestanden zijn hetzelfde.";
+                }
+                else
+                {
+                    TxtHashResult.Text = "De hashes komen niet overeen. De bestanden zijn verschillend.";
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecteer alstublieft twee geldige bestanden.", "Bestanden Nodig", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+    }
 }

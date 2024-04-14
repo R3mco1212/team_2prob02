@@ -80,7 +80,7 @@ namespace ClassLibraryEncryptionTool
 			}
 		}
 
-		public static string GenerateHash(byte[] data)
+		public static string GenerateHashRSA(byte[] data)
 		{
 			using (var sha256 = SHA256.Create())
 			{

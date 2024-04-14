@@ -473,5 +473,52 @@ namespace Home
 
 		#endregion
 
+		#region Hash
+
+		private void BtnHashRSA_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog ofd1 = new OpenFileDialog
+			{
+				Title = "Selecteer het eerste bestand voor hash-vergelijking",
+				Filter = "Alle bestanden (*.*)|*.*"
+			};
+
+			OpenFileDialog ofd2 = new OpenFileDialog
+			{
+				Title = "Selecteer het tweede bestand voor hash-vergelijking",
+				Filter = "Alle bestanden (*.*)|*.*"
+			};
+			string file1Path = ofd1.ShowDialog() == true ? ofd1.FileName : null;
+			string file2Path = ofd2.ShowDialog() == true ? ofd2.FileName : null;
+
+			if (!string.IsNullOrEmpty(file1Path) && !string.IsNullOrEmpty(file2Path))
+			{
+				byte[] file1Bytes = File.ReadAllBytes(file1Path);
+				byte[] file2Bytes = File.ReadAllBytes(file2Path);
+
+				string hash1 = RsaEncryptionTool.GenerateHashRSA(file1Bytes);
+				string hash2 = RsaEncryptionTool.GenerateHashRSA(file2Bytes);
+
+				LblHashEncrypt.Text = hash1;
+				LblHashDecrypt.Text = hash2;
+
+				if (hash1 == hash2)
+				{
+					LblHashEncrypt.Foreground = Brushes.LimeGreen;
+					LblHashDecrypt.Foreground = Brushes.LimeGreen;
+				}
+				else
+				{
+					LblHashEncrypt.Foreground = Brushes.Red;
+					LblHashDecrypt.Foreground = Brushes.Red;
+				}
+			}
+			else
+			{
+				MessageBox.Show("Selecteer alstublieft twee geldige bestanden.", "Bestanden Nodig", MessageBoxButton.OK, MessageBoxImage.Information);
+			}
+		}
+
+		#endregion
 	}
 }

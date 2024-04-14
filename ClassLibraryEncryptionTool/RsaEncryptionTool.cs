@@ -58,26 +58,25 @@ namespace ClassLibraryEncryptionTool
 			using (var csp = new RSACryptoServiceProvider())
 			{
 				csp.FromXmlString(publicKey);
+				var dataBytes = Convert.FromBase64String(plainText);
+				var cipherData = csp.Encrypt(dataBytes, true);
 
-				var keyBytes = Convert.FromBase64String(plainText);
-				var cypherData = csp.Encrypt(keyBytes, false);
-
-				return Convert.ToBase64String(cypherData);
+				return Convert.ToBase64String(cipherData);
 			}
 		}
 
 
 
-		public string Decrypt(string cipherText, string PrivateKey)
+		public string Decrypt(string cipherText, string privateKey)
 		{
 			using (var csp = new RSACryptoServiceProvider())
 			{
 				try
 				{
-					csp.FromXmlString(PrivateKey);
+					csp.FromXmlString(privateKey);
 					var dataBytes = Convert.FromBase64String(cipherText);
-					var cipherData = csp.Decrypt(dataBytes, false);
-					return Convert.ToBase64String(cipherData);
+					var plainData = csp.Decrypt(dataBytes, true);
+					return Convert.ToBase64String(plainData);
 				}
 				catch (CryptographicException)
 				{

@@ -206,37 +206,41 @@ namespace Home
 		}
 
 
-		private void BtnDecrypt_Click(object sender, RoutedEventArgs e)
-		{
-			if (!File.Exists(LblKey.Content.ToString()))
-			{
-				MessageBox.Show("Key bestaat niet", "Error");
-				return;
-			}
-			if (!File.Exists(LblIv.Content.ToString()))
-			{
-				MessageBox.Show("Iv bestaat niet", "Error");
-				return;
-			}
-			OpenFileDialog ofd = new OpenFileDialog()
-			{
-				Filter = "Selecteer de encrypted imageDate (*.txt)|*.txt"
-			};
-			string image64Path = "";
-			if (ofd.ShowDialog() == true)
-			{
-				image64Path = ofd.FileName;
-			}
-			try
-			{
-				if (!string.IsNullOrEmpty(image64Path))
-				{
+        private void BtnDecrypt_Click(object sender, RoutedEventArgs e)
+        {
+            if (!File.Exists(LblKey.Content.ToString()))
+            {
+                MessageBox.Show("Key bestaat niet", "Error");
+                return;
+            }
+            if (!File.Exists(LblIv.Content.ToString()))
+            {
+                MessageBox.Show("Iv bestaat niet", "Error");
+                return;
+            }
+            OpenFileDialog ofd = new OpenFileDialog()
+            {
+                Filter = "Selecteer de encrypted imageData (*.txt)|*.txt"
+            };
+            string image64Path = "";
+            if (ofd.ShowDialog() == true)
+            {
+                image64Path = ofd.FileName;
+            }
+            try
+            {
+                if (!string.IsNullOrEmpty(image64Path))
+                {
                     string image64 = File.ReadAllText(image64Path);
                     if (!string.IsNullOrEmpty(image64))
                     {
                         string keyPath = File.ReadAllText(LblKey.Content.ToString());
                         string ivPath = File.ReadAllText(LblIv.Content.ToString());
                         byte[] imageData = AesEncryptionTool.DecryptData(image64, keyPath, ivPath);
+
+                        // Genereer de hash van de gedecrypteerde data
+                        string decryptedHash = AesEncryptionTool.GenerateHash(imageData);
+                        TxtDecryptedHash.Text = decryptedHash; // Update de UI met de gegenereerde hash
 
                         BitmapImage image = ByteArrayToImage(imageData);
                         ImgDecrypted.Source = image;
@@ -247,17 +251,15 @@ namespace Home
                     }
                 }
             }
-			catch(CryptographicException ex)
-			{
-				MessageBox.Show("Error: " + ex.Message,"Error",MessageBoxButton.OK,MessageBoxImage.Warning);
-			}
+            catch (CryptographicException ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
 
 
 
-		}
-
-
-		private void MnuDefault_Click(object sender, RoutedEventArgs e)
+        private void MnuDefault_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = Properties.Settings.Default.DefaultFolder;

@@ -66,6 +66,10 @@
                         <Image Name="ImgDecrypted"/>
                     </GroupBox>
 
+                    <GroupBox Grid.Row="2" Grid.Column="0" Header="Hash van gedecrypteerde data:" Margin="5">
+                        <TextBlock Name="TxtDecryptedHash" TextWrapping="Wrap" />
+                    </GroupBox>
+
                     <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>

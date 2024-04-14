@@ -11,6 +11,15 @@ namespace ClassLibraryEncryptionTool
     public static class AesEncryptionTool
     {
 
+        public static string GenerateHash(byte[] data)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] hashData = sha256.ComputeHash(data);
+                return BitConverter.ToString(hashData).Replace("-", "").ToLowerInvariant();
+            }
+        }
+
         public static Aes CreateAes()
         {
             return Aes.Create();

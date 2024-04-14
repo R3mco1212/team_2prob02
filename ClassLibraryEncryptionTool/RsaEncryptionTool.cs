@@ -50,9 +50,6 @@ namespace ClassLibraryEncryptionTool
 			return true;
 		}
 
-
-
-
 		public string Encrypt(string plainText, string publicKey)
 		{
 			using (var csp = new RSACryptoServiceProvider())
@@ -64,8 +61,6 @@ namespace ClassLibraryEncryptionTool
 				return Convert.ToBase64String(cipherData);
 			}
 		}
-
-
 
 		public string Decrypt(string cipherText, string privateKey)
 		{
@@ -85,6 +80,13 @@ namespace ClassLibraryEncryptionTool
 			}
 		}
 
-
+		public static string GenerateHash(byte[] data)
+		{
+			using (var sha256 = SHA256.Create())
+			{
+				byte[] hashData = sha256.ComputeHash(data);
+				return BitConverter.ToString(hashData).Replace("-", "").ToLowerInvariant();
+			}
+		}
 	}
 }

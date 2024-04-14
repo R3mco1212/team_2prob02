@@ -81,18 +81,21 @@
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
+                    <GroupBox Grid.Column="2"></GroupBox>
                     <StackPanel VerticalAlignment="Top">
                         <Label Content="Naam Sleutel: " Margin="6 0 0 0"/>
                         <TextBox x:Name="TbNaamKey" VerticalAlignment="Bottom" Margin="10 0 10 5" Height="30" VerticalContentAlignment="Center"/>
                     </StackPanel>
                     <Button x:Name="BtnGenerateRSAKey" Content="Create RSA key" Height="50" VerticalAlignment="Bottom" Click="BtnGenerateRSAKey_Click" Margin="10"/>
-                    <Button x:Name="BtnSelecteerSleutel" Content="Selecteer key" Margin="10" Grid.Column="2" Click="BtnSelecteerSleutel_Click" Grid.Row="2" IsEnabled="False"/>
+                    <StackPanel Grid.Row="2" Grid.Column="2">
+                        <Button x:Name="BtnKiesBestand" Content="Kies bestand" Margin="10 10 10 5" Grid.Column="2" Click="BtnKiesBestand_Click" Grid.Row="1" IsEnabled="False" Height="50"/>
+                        <Button x:Name="BtnSelecteerSleutel" Content="Selecteer key" Margin="10" Grid.Column="2" Click="BtnSelecteerSleutel_Click" Grid.Row="2" IsEnabled="False" Height="50"/>
+                    </StackPanel>
                     <StackPanel Grid.Row="2">
                         <Button x:Name="BtnLaadPublicKey" Content="Laad public key" Height="50" VerticalAlignment="Top" Click="BtnLaadPublicKey_Click" Margin="10 10 10 5"/>
                         <Button x:Name="BtnLaadPrivateKey" Content="Laad private key" Height="50" VerticalAlignment="Bottom" Click="BtnLaadPrivateKey_Click" Margin="10"/>
                     </StackPanel>
-                    <Button x:Name="BtnKiesBestand" Content="Kies bestand" Margin="10" Grid.Column="2" Click="BtnKiesBestand_Click" Grid.Row="1" IsEnabled="False"/>
-                    <Button x:Name="BtnEncrypteer" Content="Encrypt" Margin="10" Grid.Column="2" Click="BtnEncrypteer_Click" IsEnabled="False"/>
+                    <Button x:Name="BtnEncrypteer" Content="Encrypt" Margin="10" Grid.Column="2" Grid.Row="1" Click="BtnEncrypteer_Click" IsEnabled="False"/>
                     <Button x:Name="BtnDecrypteer" Content="Kies bestand en start de decryption" Margin="10" Grid.Column="1" Grid.Row="2" Click="BtnDecrypteer_Click" IsEnabled="False"/>
                     <StackPanel Grid.Row="1" VerticalAlignment="Center">
                         <Label x:Name="LbCipherText" Content="Naam bestand ciphertext (Encrypt)" Margin="6 0 0 0" Foreground="Red"/>

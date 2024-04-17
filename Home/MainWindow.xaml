@@ -87,12 +87,12 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Button Name="BtnCreateKeyAndIv" Content="Create Key and IV"
-                                Click="BtnCreateKeyAndIv_Click" Margin="132,39,164,0" Grid.ColumnSpan="2" Grid.Column="1"/>
+                                Click="BtnCreateKeyAndIv_Click" Margin="132,84,164,0" Grid.ColumnSpan="2" Grid.Column="1"/>
                         <Button Name="BtnSelectImage" Content="Select image to encrypt"
-                                Grid.Column="2" Click="BtnSelectImage_Click" Margin="39,39,10,0"/>
-                        <Button Name="BtnEncrypt" Content="Start encryption" Grid.Column="2" Click="BtnEncrypt_Click" Grid.ColumnSpan="2" Margin="193,39,104,0"/>
-                        <Button Name="BtnDecrypt" Content="Start Decryption" Grid.Column="3" Click="BtnDecrypt_Click" Margin="100,39,0,0"/>
-                        <Button x:Name="BtnValidateHash" Content="Valideer Hashes" Click="BtnValidateHash_Click" Margin="38,37,71,-3" Grid.Column="1"/>
+                                Grid.Column="2" Click="BtnSelectImage_Click" Margin="39,84,10,0"/>
+                        <Button Name="BtnEncrypt" Content="Start encryption" Grid.Column="2" Click="BtnEncrypt_Click" Grid.ColumnSpan="2" Margin="193,84,104,0"/>
+                        <Button Name="BtnDecrypt" Content="Start Decryption" Grid.Column="3" Click="BtnDecrypt_Click" Margin="100,84,0,0"/>
+                        <Button x:Name="BtnValidateHash" Content="Valideer Hashes" Click="BtnValidateHash_Click" Margin="38,84,71,0" Grid.Column="1"/>
                     </Grid>
                 </Grid>
             </TabItem>
